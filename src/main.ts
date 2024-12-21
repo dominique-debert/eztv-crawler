@@ -1,6 +1,7 @@
 import bytes from "bytes";
 import fetch from "cross-fetch";
 import { load, CheerioAPI, Element } from 'cheerio';
+import { ESLint } from "eslint";
 
 export type EpisodeType = {
     showLink: string | undefined;
@@ -49,62 +50,73 @@ export type ApiResponseType = {
 }
 
 /**
- * Crawl any given url
- * 
- * @link https://www.npmjs.com/package/crawler
- * @param url 
- * @returns `Crawler.CrawlerRequestResponse`
- */
+* Crawl any given url
+* 
+* @link https://www.npmjs.com/package/crawler
+* @param url 
+* @returns `Crawler.CrawlerRequestResponse`
+*/
 async function crawl(url: string) {
     const body = await fetch(url).then(async resp => resp.text());
     const $ = load(body);
-
+    
     return { body, $ };
 }
 
 /**
- * Get all shows listen on EZTV
- * 
- * @returns `object`
- */
+* Get all shows listen on EZTV
+* 
+* @returns `object`
+*/
 export async function getShows() {
     const { $ } = await crawl(`https://eztv.wf/showlist/`);
     const shows = $('a[class="thread_link"]').toArray();
-
+    
     return shows.map(show => {
         const showIdRegex = $(show).attr('href')?.match(/shows\/(\d+)\//);
-
+        const showTitle = $(show).text();
+        const showId = showIdRegex ? parseInt(showIdRegex[1]) : null;
+        
+        // TODO : FAIRE UNE FONCTION POUR RÉCUPÉRER LE THUMBNAIL / DODO
+        const showIdLen = showId ? showId?.toFixed(0).length : 0 ;
+        const _c = $(show).attr('href')?.slice(7 + showIdLen);
+        const _d = _c ? _c.substring(0, _c.length - 1) : null;
+        
+        const showThumb = `https://eztv.wf/ezimg/thumbs/` + _d + '-' + showId + '.jpg';
+        console.log(showThumb);
+        
         return {
-            id: showIdRegex ? parseInt(showIdRegex[1]) : null,
-            title: $(show).text()
+            id: showId,
+            title: showTitle,
+            showThumb: showThumb
         }
-    }).filter(show => show.id) as { id: number, title: string }[];
+    }).filter(show => show.id) as { id: number, title: string, showThumb: string }[];
 }
 
 /**
- * Get a show and its episodes
- * 
- * Recommended to use an ID, if using a showname
- * it must be an exact match except for uppercase
- * 
- * @param showId    - A show ID or a show name
- * @returns `object`
- */
+* Get a show and its episodes
+* 
+* Recommended to use an ID, if using a showname
+* it must be an exact match except for uppercase
+* 
+* @param showId    - A show ID or a show name
+* @returns `object`
+*/
 export async function getShow(show: number|string): Promise<ShowType> {
     /**
-     * If a string is passed find show based on title
-     */
+    * If a string is passed find show based on title
+    */
     if(typeof show === 'string') {
         const shows = await getShows();
         const findShow = shows.find(s => s.title.toLowerCase() === show.toLowerCase());
-
+        
         if (!findShow) {
             throw new EztvCrawlerException(`Did not find a show with name ${show}`)
         }
         
         return getShow(findShow.id);
     }
-
+    
     const { $ } = await crawl(`https://eztv.wf/shows/${show}/`);
     const episodes = $('[name="hover"]').toArray();
     const imdbIdRegex = $('[itemprop="aggregateRating"] a').attr('href')?.match(/tt\d+/);
@@ -118,20 +130,20 @@ export async function getShow(show: number|string): Promise<ShowType> {
             return transformToEpisode($, episode);
         })
     }
-
+    
     if (!result || !result.title || result.title === '') {
         throw new EztvCrawlerException(`Did not find a show with name ${show}`)
     }
-
+    
     return result;
 }
 
 /**
- * Search for a TV show episode
- * 
- * @param query     - string
- * @returns `episodeObject`
- */
+* Search for a TV show episode
+* 
+* @param query     - string
+* @returns `episodeObject`
+*/
 export async function search(query: string) {
     const { $ } = await crawl(`https://eztv.wf/search/${query}`);
     const episodes = $('[name="hover"]').toArray();
@@ -142,68 +154,68 @@ export async function search(query: string) {
 }
 
 /**
- * Get a list of torrents
- * 
- * @param limit 
- * @param page 
- * @param apiBaseUrl        - If eztv domain changed or eztv is blocked in your country provide a proxy url here
- * @returns `ApiResponseType`
- */
+* Get a list of torrents
+* 
+* @param limit 
+* @param page 
+* @param apiBaseUrl        - If eztv domain changed or eztv is blocked in your country provide a proxy url here
+* @returns `ApiResponseType`
+*/
 export async function getTorrents(limit = 10, page = 1, apiBaseUrl = 'https://eztv.wf/api/') {
     return await makeApiRequest('/get-torrents', { limit: limit.toString(), page: page.toString() }, apiBaseUrl);
 }
 
 /**
- * Get a list of torrents based on IMDb ID
- * 
- * NOTE:     
- * For TV Shows provide the IMDb id of the show itself, it does not work
- * when you provide an IMDb for individual episodes
- * 
- * @param imdbId            - IMDb ID
- * @param apiBaseUrl        - If eztv domain changed or eztv is blocked in your country provide a proxy url here
- * @returns `ApiResponseType`
- */
+* Get a list of torrents based on IMDb ID
+* 
+* NOTE:     
+* For TV Shows provide the IMDb id of the show itself, it does not work
+* when you provide an IMDb for individual episodes
+* 
+* @param imdbId            - IMDb ID
+* @param apiBaseUrl        - If eztv domain changed or eztv is blocked in your country provide a proxy url here
+* @returns `ApiResponseType`
+*/
 export async function getTorrentsByImdbId(imdbId: string, limit = 30, page = 1, apiBaseUrl = 'https://eztv.wf/api/') {
     return await makeApiRequest('/get-torrents', { imdb_id: imdbId, limit: limit.toString(), page: page.toString() }, apiBaseUrl);
 }
 
 /**
- * Send a request to EZTV's API
- * 
- * @param path      
- * @param params 
- * @param apiBaseUrl 
- * @returns `ApiResponseType`
- */
+* Send a request to EZTV's API
+* 
+* @param path      
+* @param params 
+* @param apiBaseUrl 
+* @returns `ApiResponseType`
+*/
 async function makeApiRequest(path: string, params: Record<string, string>, apiBaseUrl = 'https://eztv.wf/api/') {
     if (params.imdb_id) {
         params.imdb_id = params.imdb_id.replace(/\D+/, '');
     }
-
+    
     try {
         const request = await fetch(`${apiBaseUrl}/${path}?${new URLSearchParams(params)}`);
         const json: ApiResponseType = await request.json();
-
+        
         return json;
     } catch(e) {
         if(e instanceof Error) {
             throw new EztvCrawlerException(e.message);
         }
-
+        
         throw new EztvCrawlerException('Could not fullfill request.');
     }
 }
 
 /**
- * Transforms a <table> Element into a episode object
- * 
- * Note: in torrents, don't parse the `.download_2` class, it contains spam and malware in some cases
- * 
- * @param $         - cheerio.CheerioAPI
- * @param episode   - cheerio.Element
- * @returns `episodeObject`
- */
+* Transforms a <table> Element into a episode object
+* 
+* Note: in torrents, don't parse the `.download_2` class, it contains spam and malware in some cases
+* 
+* @param $         - cheerio.CheerioAPI
+* @param episode   - cheerio.Element
+* @returns `episodeObject`
+*/
 function transformToEpisode($: CheerioAPI, episode: Element) {
     return {
         showLink: $(episode).find('td:nth-child(1) a').attr('href'),

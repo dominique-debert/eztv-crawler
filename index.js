@@ -3,4 +3,9 @@ import { getShow, search, getShows, getTorrents, getTorrentsByImdbId } from './d
 const shows = await getShows();
 
 console.clear();
-console.log(shows);
+// console.log(shows);
+// const currentShow = await getShow(firstShow.id);
+// console.log(currentShow.id);
+// console.log(shows.length);
+
+console.log('end');
