@@ -17,6 +17,7 @@ export type ShowType = {
     summary: string;
     description: string;
     imdbId: string | null;
+    picture: string | undefined;
     episodes: EpisodeType[];
 }
 
@@ -112,6 +113,7 @@ export async function getShow(show: number|string): Promise<ShowType> {
         summary: $('[itemprop="description"] p').text(),
         description: $('span[itemprop="description"] + br + br + hr + br + span').text(),
         imdbId: imdbIdRegex ? imdbIdRegex[0] : null,
+        picture: $('img[itemprop="image"]').attr('src')?.toString(),
         episodes: episodes.map(episode => {
             return transformToEpisode($, episode);
         })

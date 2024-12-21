@@ -14,7 +14,7 @@
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only --watch src src/test.ts",
+    "dev": "node --watch index.js",
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "install": "npm run build",

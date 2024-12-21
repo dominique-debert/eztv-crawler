@@ -10,6 +10,7 @@ test('Get single show from eztv', async () => {
         summary: expect.any(String),
         description: expect.any(String),
         imdbId: expect.any(String),
+        pictureSrc: expect.any(String),
         episodes: expect.any(Array),
     }));
 })
