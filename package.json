@@ -14,7 +14,7 @@
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "scripts": {
-    "dev": "node --watch index.js",
+    "dev": "node --watch app.js",
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "install": "npm run build",
@@ -33,6 +33,8 @@
     "bytes": "^3.1.2",
     "cheerio": "^1.0.0-rc.10",
     "cross-fetch": "^3.1.5",
-    "eslint": "^9.17.0"
+    "ejs": "^3.1.10",
+    "eslint": "^9.17.0",
+    "express": "^4.21.2"
   }
 }

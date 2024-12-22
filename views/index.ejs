@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EasyTV</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  </head>
+  <body>
+    <section class="section">
+      <div class="container" style="display: grid; grid-template-columns: repeat(5, 1fr);gap: 2rem;">
+        <% shows.forEach(show => { %>
+          <div style="display: flex; flex-direction: column;">
+            <div class="card" id="<%= show.id %>" name="show" style="min-height: 350px; background-image: url('<%= show.thumbnail %>'); background-size: cover; cursor: pointer;">
+            </div>
+            <a href="<%= show.url %>" style="text-align: center;font-size: 1rem; font-family: 'Poppins', sans-serif;">
+              <%= show.title %>
+            </a>
+          </div>
+        <% }) %>
+    </div>
+  </section>
+  </body>
+</html>

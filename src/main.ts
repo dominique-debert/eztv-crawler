@@ -1,7 +1,6 @@
 import bytes from "bytes";
 import fetch from "cross-fetch";
 import { load, CheerioAPI, Element } from 'cheerio';
-import { ESLint } from "eslint";
 
 export type EpisodeType = {
     showLink: string | undefined;
@@ -18,7 +17,6 @@ export type ShowType = {
     summary: string;
     description: string;
     imdbId: string | null;
-    picture: string | undefined;
     episodes: EpisodeType[];
 }
 
@@ -77,20 +75,20 @@ export async function getShows() {
         const showTitle = $(show).text();
         const showId = showIdRegex ? parseInt(showIdRegex[1]) : null;
         
-        // TODO : FAIRE UNE FONCTION POUR RÉCUPÉRER LE THUMBNAIL / DODO
         const showIdLen = showId ? showId?.toFixed(0).length : 0 ;
+        const showUrl = $(show).attr('href');
         const _c = $(show).attr('href')?.slice(7 + showIdLen);
         const _d = _c ? _c.substring(0, _c.length - 1) : null;
         
-        const showThumb = `https://eztv.wf/ezimg/thumbs/` + _d + '-' + showId + '.jpg';
-        console.log(showThumb);
+        const showThumb = `https://eztv.wf/ezimg/thumbs` + _d + '-' + showId + '.jpg';
         
         return {
             id: showId,
             title: showTitle,
-            showThumb: showThumb
+            thumbnail: showThumb,
+            url: showUrl
         }
-    }).filter(show => show.id) as { id: number, title: string, showThumb: string }[];
+    }).filter(show => show.id) as { id: number, title: string, thumbnail: string, url: string }[];
 }
 
 /**
@@ -125,7 +123,6 @@ export async function getShow(show: number|string): Promise<ShowType> {
         summary: $('[itemprop="description"] p').text(),
         description: $('span[itemprop="description"] + br + br + hr + br + span').text(),
         imdbId: imdbIdRegex ? imdbIdRegex[0] : null,
-        picture: $('img[itemprop="image"]').attr('src')?.toString(),
         episodes: episodes.map(episode => {
             return transformToEpisode($, episode);
         })
