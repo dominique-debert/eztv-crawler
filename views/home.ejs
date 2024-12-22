@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EasyTV</title>
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"> -->
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Main Navigation -->
+  <!-- <%- include('./partials/nav', ) %> -->
+  
+  <section class="section">
+    <div class="grid">
+      <% shows.forEach(show => { %>
+        <div class="show__container">
+          <div class="show" id="<%= show.id %>" style="background-image: url('<%= show.thumbnail %>');">
+          </div>
+          <a class="show__link" href="<%= show.url %>"><%= show.title %></a>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+  </body>
+  </html>
+  

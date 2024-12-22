@@ -11,7 +11,7 @@ app.use(express.static('public'));
 
 app.get('/', (req, res) => {
   res.locals.shows = shows;
-  res.render('index');
+  res.render('home');
 });
 
 console.log('end');
