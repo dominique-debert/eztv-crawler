@@ -1,0 +1,19 @@
+
+<%- include('./partials/header', ) %>
+
+<!-- Main Navigation -->
+<%- include('./partials/nav', ) %>
+
+<section class="section">
+  <% if (latestShows) { %>
+    <% latestShows.forEach(show => { %>
+      <li>
+        <a class="latest-show__link" href="<%= show.url %>"><%= show.title %></a>
+      </li>
+    <% }) %>
+  <% } %>
+</section>
+    
+<%- include('./partials/footer', ) %>
+    
+    
