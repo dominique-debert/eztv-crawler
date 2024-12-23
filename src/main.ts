@@ -94,19 +94,19 @@ export async function getShows() {
 export async function getLatestShows() {
     const { $ } = await crawl(`https://eztv.wf/home`);
     const shows = $('a[class="epinfo"]').toArray();
-
+    
     return shows.map(show => {
         const showIdRegex = $(show).attr('href')?.match(/ep\/(\d+)\//);
         const showTitle = $(show).text();
         const showId = showIdRegex ? parseInt(showIdRegex[1]) : null;
         const showUrl = $(show).attr('href');
-
+        
         return {
             id: showId,
             title: showTitle,
             url: showUrl
         }        
-
+        
     }).filter(show => show.id) as { id: number, title: string, url: string }[];
 }
 

@@ -37,6 +37,7 @@ section {
 
 .mdi {
   color: var(--light-purple);
+  margin-right: .3rem;
 }
 
 .horizontal-navigation__item {
