@@ -137,11 +137,15 @@ export async function getShow(show: number|string): Promise<ShowType> {
     const { $ } = await crawl(`https://eztv.wf/shows/${show}/`);
     const episodes = $('[name="hover"]').toArray();
     const imdbIdRegex = $('[itemprop="aggregateRating"] a').attr('href')?.match(/tt\d+/);
+    const thumbnail = 'https://eztv.wf' + $('img[itemprop="image"]').attr('src');
+    console.log(thumbnail);
+
     const result = {
         title: $('.section_post_header [itemprop="name"]').text(),
         summary: $('[itemprop="description"] p').text(),
         description: $('span[itemprop="description"] + br + br + hr + br + span').text(),
         imdbId: imdbIdRegex ? imdbIdRegex[0] : null,
+        thumbnail: thumbnail,
         episodes: episodes.map(episode => {
             return transformToEpisode($, episode);
         })

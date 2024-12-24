@@ -27,7 +27,7 @@ app.get('/latest', async (req, res) => {
   
   if (shows) {
     for (var i = 0; i < shows.length; ++i) {
-        routes.push({"Key": i + 1 , url : shows[i].url});
+        routes.push({"Key": i + 1 , 'id': shows[i].id, 'url': shows[i].url});
     }
   }
   
@@ -35,11 +35,15 @@ app.get('/latest', async (req, res) => {
   res.render('latest');
 });
 
-app.get(routes, (req, res) => {
-  const show = shows.find((show) => show.url === req.url)
-  console.log(show);
-  res.locals.show = show;
-  res.render('episode-detail');
+app.get(routes, async (req, res) => {
+  if (req.url != '/' && req.url != '/latest' && req.url != '/favicon.ico') {
+    const findShow = shows.find((show) => show.url === req.url)
+    if (findShow) {
+      const show = await getShow(findShow.id);
+      res.locals.show = show;
+      res.render('show-detail');
+    }
+  }
 })
 
 

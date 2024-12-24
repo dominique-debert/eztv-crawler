@@ -7,9 +7,11 @@
     <div class="grid">
       <% shows.forEach(show => { %>
         <div class="show__container">
-          <div class="show__picture" id="<%= show.id %>" style="background-image: url('<%= show.thumbnail %>');">
-          </div>
-          <a class="show__link" href="<%= show.url %>"><%= show.title %></a>
+          <a href="<%= show.url %>">
+            <div class="show__picture" id="<%= show.id %>" style="background-image: url('<%= show.thumbnail %>');">
+            </div>
+          </a>
+          <h3 class="show__link"><%= show.title %></h3>
         </div>
       <% }) %>
     </div>

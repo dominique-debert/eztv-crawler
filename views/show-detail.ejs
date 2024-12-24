@@ -1,0 +1,9 @@
+<%- include('./partials/header', ) %>
+
+<!-- Main Navigation -->
+<%- include('./partials/nav', ) %>
+<section class="section" style="background-image: url('<%= show.thumbnail %>');">
+  <h1 class="title is-3"><%= show.title %></h1>
+  <p><%= show.summary %></p>
+</section>
+<%- include('./partials/footer', ) %>
