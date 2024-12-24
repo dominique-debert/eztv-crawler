@@ -69,6 +69,7 @@ section {
   background-size: cover; 
   background-position: center;
   min-height: 25rem;
+  min-width: 233px;
 }
 
 .show__link {

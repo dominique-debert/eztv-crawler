@@ -5,8 +5,8 @@
 <%- include('./partials/nav', ) %>
 
 <section class="section">
-  <% if (latestShows) { %>
-    <% latestShows.forEach(show => { %>
+  <% if (shows) { %>
+    <% shows.forEach(show => { %>
       <li>
         <a class="latest-show__link" href="<%= show.url %>"><%= show.title %></a>
       </li>
